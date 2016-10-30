@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btn;
     private File file;
     private TextView text;
-    private long availableBlocksLong;
+
 
 
     @Override
@@ -117,17 +117,20 @@ public class MainActivity extends AppCompatActivity {
         StatFs statFs = new StatFs(file1.getAbsolutePath());
         long blockCountLong;
         long blockSizeLong;
+        long availableBlocksLong;
+        long freeBlocksLong;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             blockCountLong = statFs.getBlockCountLong();
             blockSizeLong = statFs.getBlockSizeLong();
             availableBlocksLong = statFs.getAvailableBlocksLong();
-
+            freeBlocksLong = statFs.getFreeBlocksLong();
 
 
         }else{
             blockCountLong = statFs.getBlockCount();
             blockSizeLong = statFs.getBlockSize();
             availableBlocksLong = statFs.getAvailableBlocks();
+            freeBlocksLong = statFs.getFreeBlocks();
 
         }
 
@@ -137,7 +140,8 @@ public class MainActivity extends AppCompatActivity {
 //        String s1 = Formatter.formatFileSize(this, blockSizeLong * blockCountLong);
 
         text.setText(s + "\n" + Formatter.formatFileSize(this, blockSizeLong * blockCountLong)
-        + "\n" + Formatter.formatFileSize(this, blockSizeLong * (blockCountLong - availableBlocksLong)));
+        + "\n" + Formatter.formatFileSize(this, blockSizeLong * (blockCountLong - freeBlocksLong))
+        + "\n" + Formatter.formatFileSize(this, freeBlocksLong * blockSizeLong));
 
 
     }
