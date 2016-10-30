@@ -1,13 +1,16 @@
 package adly.my.demo;
 
 import android.os.Environment;
+import android.os.StatFs;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -25,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox checkBox;
     private Button btn;
     private File file;
+    private TextView text;
+    private long availableBlocksLong;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         psw = (EditText) findViewById(R.id.psw);
         checkBox = (CheckBox) findViewById(R.id.checkbox);
         btn = (Button) findViewById(R.id.btn);
+        text = (TextView) findViewById(R.id.text);
 //        /data/data/adly.my.demo
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
             file = new File(Environment.getExternalStorageDirectory(),"ww.txt");
@@ -45,7 +52,9 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e(MainActivity.class.getSimpleName(), file.getAbsolutePath());
         initView();
+
         readView();
+
 
     }
 
@@ -103,6 +112,34 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "登录成功！", Toast.LENGTH_LONG).show();
             }
         });
+
+        File file1 = Environment.getExternalStorageDirectory();
+        StatFs statFs = new StatFs(file1.getAbsolutePath());
+        long blockCountLong;
+        long blockSizeLong;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            blockCountLong = statFs.getBlockCountLong();
+            blockSizeLong = statFs.getBlockSizeLong();
+            availableBlocksLong = statFs.getAvailableBlocksLong();
+
+
+
+        }else{
+            blockCountLong = statFs.getBlockCount();
+            blockSizeLong = statFs.getBlockSize();
+            availableBlocksLong = statFs.getAvailableBlocks();
+
+        }
+
+        long l = blockSizeLong * availableBlocksLong;
+        String s = Formatter.formatFileSize(this, l);
+
+//        String s1 = Formatter.formatFileSize(this, blockSizeLong * blockCountLong);
+
+        text.setText(s + "\n" + Formatter.formatFileSize(this, blockSizeLong * blockCountLong)
+        + "\n" + Formatter.formatFileSize(this, blockSizeLong * (blockCountLong - availableBlocksLong)));
+
+
     }
 
 
